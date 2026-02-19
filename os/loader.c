@@ -2,6 +2,7 @@
 #include "defs.h"
 #include "trap.h"
 
+
 static uint64 app_num;
 static uint64 *app_info_ptr;
 extern char _app_num[], ekernel[];
@@ -48,9 +49,11 @@ int run_all_app()
 		trapframe->epc = entry;
 		trapframe->sp = (uint64)p->ustack + USER_STACK_SIZE;
 		p->state = RUNNABLE;
-		/*
-		* LAB1: you may need to initialize your new fields of proc here
-		*/
+		p->first_scheduled_ms = 0;
+		for (int j = 0; j < MAX_SYSCALL_NUM; j++) {
+			p->syscall_times[j] = 0;
+		}
+
 	}
 	return 0;
 }

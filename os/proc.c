@@ -67,6 +67,10 @@ found:
 	memset((void *)p->kstack, 0, PAGE_SIZE);
 	p->context.ra = (uint64)usertrapret;
 	p->context.sp = p->kstack + PAGE_SIZE;
+
+	memset(p->syscall_times, 0, sizeof(p->syscall_times));
+	p->first_scheduled_ms = 0;
+	
 	return p;
 }
 
@@ -84,6 +88,10 @@ void scheduler(void)
 				/*
 				* LAB1: you may need to init proc start time here
 				*/
+				if (p->first_scheduled_ms == 0) {
+					p->first_scheduled_ms = get_cycle() * 1000 / CPU_FREQ;
+				}
+
 				p->state = RUNNING;
 				current_proc = p;
 				swtch(&idle.context, &p->context);
